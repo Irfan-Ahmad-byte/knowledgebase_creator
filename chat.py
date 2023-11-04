@@ -1,4 +1,4 @@
-from langchain.chains import ConversationChain
+from langchain.chains import ConversationChain, ConversationalRetrievalChain
 from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -22,7 +22,6 @@ def chat(question, store: Chroma, open_ai_api_key: str):
     '''
     #get answer from vector store
     retriever = store.as_retriever(search_type='similarity')
-    answer = retriever.get_relevant_documents(question)
 
     llm = ChatOpenAI(
         openai_api_key=open_ai_api_key,
@@ -31,9 +30,12 @@ def chat(question, store: Chroma, open_ai_api_key: str):
     )
 
     #load conversation chain
-    chain = ConversationChain(
-        llm=llm,
+    chain = ConversationalRetrievalChain.from_llm(
+        llm,
+        retriever,
         callbacks=[StreamingStdOutCallbackHandler()],
+        memory = ConversationBufferWindowMemory(memory_key='chat_history', return_messages=True, output_key='answer'),
+        return_source_documents=True
     )
 
-    return chain, answer
+    return chain

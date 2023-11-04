@@ -25,16 +25,16 @@ class FileQaApp:
 
     @st.spinner("Processing files...")
     def prepare_docs(self, files, embedding_function):
-        st.markdown('Processing uploaded files...')
+        st.success('Processing uploaded files...')
         processed_docs = process_docs(files)
-        st.markdown('Files processed!')
-        st.markdown('Storing docs!')
+        st.success('Files processed!')
+        st.success('Storing docs!')
 
         openai.api_key = self.openai_key
         store = store_docs(processed_docs, embedding_function)
 
-        st.markdown('Docs stored!')
-        st.markdown("Let's talk with your docs.")
+        st.success('Docs stored!')
+        st.success("Let's talk with your docs.")
         return store
 
     def main(self):
@@ -46,10 +46,10 @@ class FileQaApp:
                                                   type=["pdf", "docx", "html", 'txt', 'md', 'json', 'xml'])
 
         if self.store:
-            st.markdown("You already have uploaded files. Let's talk!")
+            pass
 
         elif not self.store and self.uploaded_files and len(self.uploaded_files) > 0:
-            st.markdown("Files uploaded!")
+            st.success("Files uploaded!")
 
             if st.button("Process Files", key="process_files"):
                 if not self.openai_key:
@@ -63,41 +63,45 @@ class FileQaApp:
                 files = self.load_files(self.uploaded_files)
                 st.session_state.store = self.store = self.prepare_docs(files, embeddings)
 
+        # Store LLM generated responses
+        if "messages" not in st.session_state.keys():
+            st.session_state.messages = []
+
+        # Display chat messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
         answer_container = st.container()
-        query = st.text_input("Ask questions related to your uploaded files.", key="file_qa_query")
 
-        if query:
-            chain, retrieval = chat(query, self.store, self.openai_key)
+        if query:= st.chat_input("Ask question related to your doc/s.", key="query"):
+            st.session_state.messages.append({"role": "user", "content": query})
+            with st.chat_message("user"):
+                st.write(query)
 
-            answer_box = answer_container.empty()
+            if st.session_state.messages[-1]["role"] != "Doc Chat":
+                with st.chat_message("Doc Chat"):
+                    # with st.spinner("Thinking..."):
+                    chain = chat(query, self.store, self.openai_key)
 
-            print('query: ', query)
+                    answer_box = answer_container.empty()
 
-            question = f"""You have been provided with a question and related parts from a
-                            long text as context, generate a proper answer.
-
-                            question: {query}\n\n
-
-                            context: {retrieval}\n\n
-
-                            Final Answer:
-                            
-                            """
-            
-            stream_handler = StreamHandler(answer_box)
-            chain.run(question, callbacks=[stream_handler])
+                    print('query: ', query)
+                    
+                    stream_handler = StreamHandler(st.empty())
+                    answer = chain(query, callbacks=[stream_handler])
+                    # print('answer: ', answer)
+                    st.session_state.messages.append({"role": "Doc Chat", "content": answer['answer']})
         else:
             st.write("Upload files to get started")
 
 if __name__ == "__main__":
     app = FileQaApp()
-    try:
+    st.set_page_config(page_title="🤗💬 DocChat")
+    if 'openai_api_key' in st.session_state.keys():
         app.openai_key = st.session_state.openai_api_key
-    except:
-        pass
 
-    try:
+    if 'store' in st.session_state.keys():
         app.store = st.session_state.store
-    except:
-        pass
+
     app.main()
