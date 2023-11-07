@@ -7,6 +7,8 @@ from db_ingester.processor import process_docs
 from chat import chat
 from utils import StreamHandler, save_file
 
+import os
+
 class FileQaApp:
     def __init__(self):
         self.openai_key = None
@@ -20,7 +22,9 @@ class FileQaApp:
             if file is not None:
                 file = save_file(file)
                 loader = UnstructuredFileLoader(file)
+                os.remove(file)
                 files += loader.load()
+        
         return files
 
     @st.spinner("Processing files...")
