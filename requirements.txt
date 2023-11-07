@@ -130,8 +130,6 @@ pyasn1
 pyasn1-modules
 pycocotools
 pycparser
-pydantic
-pydantic-core
 pydeck
 Pygments
 PyJWT
