@@ -157,7 +157,6 @@ requests
 requests-oauthlib
 rich
 rpds-py
-rsa
 safetensors
 scipy
 simple-websocket
