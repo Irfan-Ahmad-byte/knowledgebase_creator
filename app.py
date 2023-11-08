@@ -22,7 +22,6 @@ class FileQaApp:
             if file is not None:
                 file = save_file(file)
                 loader = UnstructuredFileLoader(file)
-                os.remove(file)
                 files += loader.load()
         
         return files
