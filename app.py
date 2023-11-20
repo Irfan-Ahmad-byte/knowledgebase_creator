@@ -47,6 +47,15 @@ class FileQaApp:
             self.openai_api_key = st.text_input("OpenAi API Key", key="file_qa_api_key", type="password")
             self.uploaded_files = st.file_uploader("Choose 1 or more files.", accept_multiple_files=True,
                                                   type=["pdf", "docx", "html", 'txt', 'md', 'json', 'xml'])
+            self.role = st.text_input("Role: how would you like the chatbot to act like?", key="role", type="text")
+            self.name = st.text_input("Name: how would you like the chatbot name it?", key="name", type="text")
+
+        if self.role and not self.name:
+            st.set_page_config(page_title=f"💬 DocChat - {self.role}")
+        if self.name and not self.role:
+            st.set_page_config(page_title=f"💬 {self.name}")
+        elif self.name and self.role:
+            st.set_page_config(page_title=f"💬 {self.name} - {self.role}")
 
         if self.store:
             pass
@@ -85,14 +94,14 @@ class FileQaApp:
             if st.session_state.messages[-1]["role"] != "Doc Chat":
                 with st.chat_message("Doc Chat"):
                     # with st.spinner("Thinking..."):
-                    chain = chat(query, self.store, self.openai_key)
+                    chain = chat(self.store, self.openai_key, self.role)
 
                     answer_box = answer_container.empty()
 
                     print('query: ', query)
                     
                     stream_handler = StreamHandler(st.empty())
-                    answer = chain(query, callbacks=[stream_handler])
+                    answer = chain({'question': query, "chat_history": []}, callbacks=[stream_handler])
                     # print('answer: ', answer)
                     st.session_state.messages.append({"role": "Doc Chat", "content": answer['answer']})
         else:
@@ -100,7 +109,7 @@ class FileQaApp:
 
 if __name__ == "__main__":
     app = FileQaApp()
-    st.set_page_config(page_title="🤗💬 DocChat")
+    st.set_page_config(page_title="💬 DocChat")
     if 'openai_api_key' in st.session_state.keys():
         app.openai_key = st.session_state.openai_api_key
 
