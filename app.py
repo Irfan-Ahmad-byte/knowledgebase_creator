@@ -48,7 +48,7 @@ class FileQaApp:
             self.uploaded_files = st.file_uploader("Choose 1 or more files.", accept_multiple_files=True,
                                                   type=["pdf", "docx", "html", 'txt', 'md', 'json', 'xml'])
             self.role = st.text_input("Role: how would you like the chatbot to act like?", key="role")
-            self.name = st.text_input("Name: how would you like the chatbot name it?", key="name")
+            self.name = st.text_input("Name: how would you like to call it?", key="name")
 
         if self.role and not self.name:
             st.set_page_config(page_title=f"💬 DocChat - {self.role}")
