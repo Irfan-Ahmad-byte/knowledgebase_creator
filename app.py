@@ -94,7 +94,7 @@ class FileQaApp:
             if st.session_state.messages[-1]["role"] != "Doc Chat":
                 with st.chat_message("Doc Chat"):
                     # with st.spinner("Thinking..."):
-                    chain = chat(self.store, self.openai_key, self.role)
+                    chain = chat(self.store, self.openai_key, self.role, self.name)
 
                     answer_box = answer_container.empty()
 

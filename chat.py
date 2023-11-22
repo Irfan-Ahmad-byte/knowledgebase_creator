@@ -23,7 +23,7 @@ from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
 from langchain.chains.qa_with_sources.stuff_prompt import PROMPT
 
-def chat(store: Chroma, open_ai_api_key: str, role='Analyst'):
+def chat(store: Chroma, open_ai_api_key: str, role='Analyst', name='DocChat'):
     '''
         function to chat with the chatbot
 
@@ -34,7 +34,14 @@ def chat(store: Chroma, open_ai_api_key: str, role='Analyst'):
         returns:
             answer: str: answer to the question
     '''
-    system_template =  'You are an ' + role + '''
+
+    if not role:
+        role = 'Analyst'
+    if not name:
+        name = 'DocChat'
+
+    system_template =  'You are an ' + role + 'And, your name is ' + name + '''.
+
     Provided a question and a context summary, give an answer according to the question.
 
     ####
