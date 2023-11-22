@@ -47,8 +47,8 @@ class FileQaApp:
             self.openai_api_key = st.text_input("OpenAi API Key", key="file_qa_api_key", type="password")
             self.uploaded_files = st.file_uploader("Choose 1 or more files.", accept_multiple_files=True,
                                                   type=["pdf", "docx", "html", 'txt', 'md', 'json', 'xml'])
-            self.role = st.text_input("Role: how would you like the chatbot to act like?", key="role", type="text")
-            self.name = st.text_input("Name: how would you like the chatbot name it?", key="name", type="text")
+            self.role = st.text_input("Role: how would you like the chatbot to act like?", key="role")
+            self.name = st.text_input("Name: how would you like the chatbot name it?", key="name")
 
         if self.role and not self.name:
             st.set_page_config(page_title=f"💬 DocChat - {self.role}")
