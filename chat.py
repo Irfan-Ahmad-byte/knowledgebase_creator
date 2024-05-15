@@ -1,27 +1,17 @@
-from langchain.chains import ConversationChain, ConversationalRetrievalChain
 from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
-from langchain.prompts import MessagesPlaceholder
-from langchain.prompts.prompt import PromptTemplate
-from langchain.memory import ConversationBufferWindowMemory
 
-import os
-from dotenv import load_dotenv, find_dotenv
-from langchain.chat_models import ChatOpenAI, ChatOllama
+from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chains import RetrievalQA, LLMChain, RetrievalQAWithSourcesChain, ConversationChain
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate, MessagesPlaceholder
+from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
 from langchain.vectorstores.chroma import Chroma
-from langchain.schema import AIMessage, SystemMessage, HumanMessage
-from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
 
-from langchain.chains.qa_with_sources.stuff_prompt import PROMPT
 
 def chat(store: Chroma, open_ai_api_key: str, role='Analyst', name='DocChat'):
     '''
